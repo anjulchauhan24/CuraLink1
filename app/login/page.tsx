@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import Navigation from "@/components/navigation"
+import { useAuth } from "@/lib/auth-context"
 
 export default function LoginPage() {
   const [userType, setUserType] = useState<"patient" | "researcher" | null>(null)
@@ -16,6 +17,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const { login } = useAuth()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -23,6 +25,13 @@ export default function LoginPage() {
 
     // Simulate login
     setTimeout(() => {
+      login({
+        id: Math.random().toString(36).substr(2, 9),
+        name: email.split("@")[0],
+        email: email,
+        type: userType!,
+      })
+
       if (userType === "patient") {
         router.push("/patient/dashboard")
       } else if (userType === "researcher") {

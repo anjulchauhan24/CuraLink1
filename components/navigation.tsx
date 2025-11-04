@@ -3,12 +3,16 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import NotificationCenter from "@/components/notification-center"
+import { useAuth } from "@/lib/auth-context"
+import UserMenu from "@/components/user-menu"
 
 interface NavigationProps {
   showNotifications?: boolean
 }
 
 export default function Navigation({ showNotifications = false }: NavigationProps) {
+  const { isAuthenticated } = useAuth()
+
   return (
     <nav className="fixed top-0 w-full bg-background/95 backdrop-blur border-b border-border z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
@@ -29,12 +33,18 @@ export default function Navigation({ showNotifications = false }: NavigationProp
           </div>
           <div className="flex items-center gap-3">
             {showNotifications && <NotificationCenter />}
-            <Link href="/login">
-              <Button variant="outline">Sign In</Button>
-            </Link>
-            <Link href="/join">
-              <Button>Get Started</Button>
-            </Link>
+            {isAuthenticated ? (
+              <UserMenu />
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="outline">Sign In</Button>
+                </Link>
+                <Link href="/join">
+                  <Button>Get Started</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
