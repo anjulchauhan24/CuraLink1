@@ -1,4 +1,4 @@
-import { consumeStream, convertToModelMessages, streamText, type UIMessage } from "ai"
+import { streamText } from "ai"
 
 export const maxDuration = 30
 
@@ -15,27 +15,15 @@ Your role:
 Be warm, empathetic, and clear. Use analogies when explaining complex concepts.`
 
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json()
-
-  const prompt = convertToModelMessages([
-    { role: "system", parts: [{ type: "text", text: SYSTEM_PROMPT }] },
-    ...messages,
-  ])
+  const { messages } = await req.json()
 
   const result = streamText({
     model: "openai/gpt-4o-mini",
-    prompt,
-    abortSignal: req.signal,
-    maxOutputTokens: 500,
+    system: SYSTEM_PROMPT,
+    messages,
+    maxTokens: 500,
     temperature: 0.7,
   })
 
-  return result.toUIMessageStreamResponse({
-    onFinish: async ({ isAborted }) => {
-      if (isAborted) {
-        console.log("[v0] Chat aborted")
-      }
-    },
-    consumeSseStream: consumeStream,
-  })
+  return result.toUIMessageStreamResponse()
 }

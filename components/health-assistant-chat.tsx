@@ -1,10 +1,7 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
-import { useChat } from "@ai-sdk/react"
-import { DefaultChatTransport } from "ai"
+import { useChat } from "ai/react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -13,18 +10,9 @@ import { MessageCircle, X, Send, Sparkles } from "lucide-react"
 export default function HealthAssistantChat() {
   const [isOpen, setIsOpen] = useState(false)
 
-  const { messages, sendMessage, status } = useChat({
-    transport: new DefaultChatTransport({ api: "/api/chat/health-assistant" }),
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+    api: "/api/chat/health-assistant",
   })
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const input = (e.target as any).message.value
-    if (input.trim()) {
-      sendMessage({ text: input })
-      ;(e.target as any).message.value = ""
-    }
-  }
 
   const suggestedQuestions = [
     "What is a clinical trial?",
@@ -32,6 +20,12 @@ export default function HealthAssistantChat() {
     "What does 'placebo' mean?",
     "Are clinical trials safe?",
   ]
+
+  const handleSuggestedQuestion = (question: string) => {
+    handleSubmit(undefined, {
+      data: { content: question },
+    })
+  }
 
   return (
     <>
@@ -83,7 +77,7 @@ export default function HealthAssistantChat() {
                   {suggestedQuestions.map((question, i) => (
                     <button
                       key={i}
-                      onClick={() => sendMessage({ text: question })}
+                      onClick={() => handleSuggestedQuestion(question)}
                       className="w-full text-left text-sm p-3 rounded-lg border hover:bg-muted transition-colors"
                     >
                       {question}
@@ -100,21 +94,12 @@ export default function HealthAssistantChat() {
                     message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
                   }`}
                 >
-                  {message.parts.map((part, index) => {
-                    if (part.type === "text") {
-                      return (
-                        <p key={index} className="text-sm whitespace-pre-wrap">
-                          {part.text}
-                        </p>
-                      )
-                    }
-                    return null
-                  })}
+                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                 </div>
               </div>
             ))}
 
-            {status === "in_progress" && (
+            {isLoading && (
               <div className="flex justify-start">
                 <div className="bg-muted rounded-lg p-3">
                   <div className="flex gap-1">
@@ -131,12 +116,13 @@ export default function HealthAssistantChat() {
           <form onSubmit={handleSubmit} className="p-4 border-t">
             <div className="flex gap-2">
               <Input
-                name="message"
+                value={input}
+                onChange={handleInputChange}
                 placeholder="Ask a question..."
-                disabled={status === "in_progress"}
+                disabled={isLoading}
                 className="flex-1"
               />
-              <Button type="submit" size="icon" disabled={status === "in_progress"}>
+              <Button type="submit" size="icon" disabled={isLoading}>
                 <Send className="h-4 w-4" />
               </Button>
             </div>

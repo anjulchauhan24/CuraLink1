@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       '@ai-sdk/react':
-        specifier: latest
+        specifier: 2.0.87
         version: 2.0.87(react@19.2.0)(zod@3.25.76)
       '@hookform/resolvers':
         specifier: ^3.10.0

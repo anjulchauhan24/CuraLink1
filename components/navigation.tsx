@@ -4,7 +4,11 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import NotificationCenter from "@/components/notification-center"
 
-export default function Navigation() {
+interface NavigationProps {
+  showNotifications?: boolean
+}
+
+export default function Navigation({ showNotifications = false }: NavigationProps) {
   return (
     <nav className="fixed top-0 w-full bg-background/95 backdrop-blur border-b border-border z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
@@ -24,7 +28,7 @@ export default function Navigation() {
             </Link>
           </div>
           <div className="flex items-center gap-3">
-            <NotificationCenter />
+            {showNotifications && <NotificationCenter />}
             <Link href="/login">
               <Button variant="outline">Sign In</Button>
             </Link>
