@@ -1,6 +1,8 @@
 "use client"
 
 import { Card } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Flame } from "lucide-react"
 
 interface PatientSidebarProps {
   activeTab: string
@@ -14,11 +16,14 @@ export default function PatientSidebar({ activeTab, setActiveTab }: PatientSideb
     condition: "Type 2 Diabetes",
     matches: 7,
     messages: 3,
+    level: 3,
+    streak: 5,
   }
 
   const menuItems = [
     { id: "trials", label: "Trial Matches", icon: "🔬", count: patient.matches },
     { id: "profile", label: "Health Profile", icon: "🏥" },
+    { id: "achievements", label: "Achievements", icon: "🏆" },
     { id: "messages", label: "Messages", icon: "💬", count: patient.messages },
   ]
 
@@ -29,6 +34,19 @@ export default function PatientSidebar({ activeTab, setActiveTab }: PatientSideb
           <div className="text-6xl mb-3">{patient.avatar}</div>
           <h3 className="font-semibold text-lg text-foreground">{patient.name}</h3>
           <p className="text-sm text-foreground/70 mt-1">{patient.condition}</p>
+
+          <div className="flex items-center justify-center gap-3 mt-3">
+            <Badge variant="secondary" className="bg-accent/20 text-accent">
+              Level {patient.level}
+            </Badge>
+            <Badge
+              variant="secondary"
+              className="bg-orange-500/20 text-orange-700 border-orange-500/30 flex items-center gap-1"
+            >
+              <Flame className="h-3 w-3" />
+              {patient.streak} days
+            </Badge>
+          </div>
         </div>
       </Card>
 

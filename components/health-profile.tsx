@@ -2,6 +2,8 @@
 
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import HealthTimeline from "@/components/health-timeline"
+import DocumentUpload from "@/components/document-upload"
 
 export default function HealthProfile() {
   const profileData = {
@@ -17,11 +19,13 @@ export default function HealthProfile() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div>
         <h2 className="text-3xl font-bold text-foreground mb-2">Your Health Profile</h2>
         <p className="text-foreground/70">Keep your information updated for accurate trial matches</p>
       </div>
+
+      <DocumentUpload />
 
       <Card className="p-6 space-y-6">
         <div>
@@ -68,6 +72,8 @@ export default function HealthProfile() {
 
         <Button>Edit Profile</Button>
       </Card>
+
+      <HealthTimeline />
     </div>
   )
 }

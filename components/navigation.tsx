@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import NotificationCenter from "@/components/notification-center"
 
 export default function Navigation() {
   return (
@@ -23,6 +24,7 @@ export default function Navigation() {
             </Link>
           </div>
           <div className="flex items-center gap-3">
+            <NotificationCenter />
             <Link href="/login">
               <Button variant="outline">Sign In</Button>
             </Link>
