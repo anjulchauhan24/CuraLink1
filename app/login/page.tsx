@@ -44,31 +44,31 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="pt-32 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md mx-auto">
-          <Card className="p-8 space-y-6">
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h1>
-              <p className="text-foreground/70">Sign in to your account</p>
+      <div className="pt-24 pb-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center min-h-[calc(100vh-6rem)]">
+        <div className="w-full max-w-md">
+          <Card className="p-10 space-y-8 border-2 shadow-xl">
+            <div className="text-center">
+              <h1 className="text-4xl font-bold text-foreground mb-3">Welcome Back</h1>
+              <p className="text-lg text-muted-foreground">Sign in to your account</p>
             </div>
 
             {!userType ? (
               <div className="space-y-4">
                 <button
                   onClick={() => setUserType("patient")}
-                  className="w-full p-4 rounded-lg border-2 border-border hover:border-primary hover:bg-primary/5 transition space-y-2"
+                  className="w-full p-6 rounded-2xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all space-y-3 group"
                 >
-                  <div className="text-3xl">👤</div>
-                  <h3 className="font-semibold text-foreground">I'm a Patient</h3>
-                  <p className="text-sm text-foreground/70">Find clinical trials</p>
+                  <div className="text-4xl group-hover:scale-110 transition-transform">👤</div>
+                  <h3 className="font-bold text-lg text-foreground">I'm a Patient</h3>
+                  <p className="text-sm text-muted-foreground">Find clinical trials</p>
                 </button>
                 <button
                   onClick={() => setUserType("researcher")}
-                  className="w-full p-4 rounded-lg border-2 border-border hover:border-primary hover:bg-primary/5 transition space-y-2"
+                  className="w-full p-6 rounded-2xl border-2 border-border hover:border-secondary hover:bg-secondary/5 transition-all space-y-3 group"
                 >
-                  <div className="text-3xl">🔬</div>
-                  <h3 className="font-semibold text-foreground">I'm a Researcher</h3>
-                  <p className="text-sm text-foreground/70">Manage trials</p>
+                  <div className="text-4xl group-hover:scale-110 transition-transform">🔬</div>
+                  <h3 className="font-bold text-lg text-foreground">I'm a Researcher</h3>
+                  <p className="text-sm text-muted-foreground">Manage trials</p>
                 </button>
               </div>
             ) : (
@@ -77,38 +77,40 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setUserType(null)}
-                    className="text-sm text-primary hover:text-primary/80 mb-4"
+                    className="text-sm text-primary hover:text-primary/80 mb-6 font-medium"
                   >
                     ← Back
                   </button>
-                  <label className="block text-sm font-medium mb-2 text-foreground">Email</label>
+                  <label className="block text-sm font-semibold mb-2 text-foreground">Email</label>
                   <Input
                     type="email"
                     placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    className="h-12"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-foreground">Password</label>
+                  <label className="block text-sm font-semibold mb-2 text-foreground">Password</label>
                   <Input
                     type="password"
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    className="h-12"
                   />
                 </div>
-                <Button type="submit" disabled={isLoading} className="w-full">
+                <Button type="submit" disabled={isLoading} className="w-full h-12 text-base font-semibold rounded-xl">
                   {isLoading ? "Signing in..." : "Sign In"}
                 </Button>
-                <div className="text-center">
-                  <p className="text-sm text-foreground/70">
+                <div className="text-center pt-2">
+                  <p className="text-sm text-muted-foreground">
                     Don't have an account?{" "}
                     <Link
                       href={userType === "patient" ? "/join" : "/researcher"}
-                      className="text-primary hover:text-primary/80"
+                      className="text-primary hover:text-primary/80 font-semibold"
                     >
                       Sign up
                     </Link>
