@@ -1,6 +1,7 @@
 "use client"
 
 import { Card } from "@/components/ui/card"
+import Link from "next/link"
 
 interface ResearcherSidebarProps {
   activeTab: string
@@ -20,7 +21,9 @@ export default function ResearcherSidebar({ activeTab, setActiveTab }: Researche
   const menuItems = [
     { id: "trials", label: "My Trials", icon: "📋", count: researcher.trials },
     { id: "candidates", label: "Find Candidates", icon: "🔍", count: researcher.candidates },
-    { id: "messages", label: "Messages", icon: "💬", count: researcher.messages },
+    { id: "collaboration", label: "Collaborations", icon: "🤝", isLink: true, href: "/researcher/collaboration" },
+    { id: "forum", label: "Forum", icon: "💬", isLink: true, href: "/forum" },
+    { id: "messages", label: "Messages", icon: "📧", count: researcher.messages },
   ]
 
   return (
@@ -34,29 +37,43 @@ export default function ResearcherSidebar({ activeTab, setActiveTab }: Researche
       </Card>
 
       <Card className="p-0 overflow-hidden">
-        {menuItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => setActiveTab(item.id)}
-            className={`w-full px-6 py-4 text-left flex items-center justify-between transition ${
-              activeTab === item.id ? "bg-primary text-primary-foreground" : "text-foreground/70 hover:bg-muted"
-            }`}
-          >
-            <span className="flex items-center gap-3">
-              <span className="text-xl">{item.icon}</span>
-              {item.label}
-            </span>
-            {item.count && (
-              <span
-                className={`text-xs font-bold px-2 py-1 rounded-full ${
-                  activeTab === item.id ? "bg-primary-foreground/20" : "bg-primary/20"
-                }`}
-              >
-                {item.count}
+        {menuItems.map((item) =>
+          item.isLink ? (
+            <Link key={item.id} href={item.href!}>
+              <div className="w-full px-6 py-4 text-left flex items-center justify-between transition text-foreground/70 hover:bg-muted cursor-pointer">
+                <span className="flex items-center gap-3">
+                  <span className="text-xl">{item.icon}</span>
+                  {item.label}
+                </span>
+                {item.count && (
+                  <span className="text-xs font-bold px-2 py-1 rounded-full bg-primary/20">{item.count}</span>
+                )}
+              </div>
+            </Link>
+          ) : (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`w-full px-6 py-4 text-left flex items-center justify-between transition ${
+                activeTab === item.id ? "bg-primary text-primary-foreground" : "text-foreground/70 hover:bg-muted"
+              }`}
+            >
+              <span className="flex items-center gap-3">
+                <span className="text-xl">{item.icon}</span>
+                {item.label}
               </span>
-            )}
-          </button>
-        ))}
+              {item.count && (
+                <span
+                  className={`text-xs font-bold px-2 py-1 rounded-full ${
+                    activeTab === item.id ? "bg-primary-foreground/20" : "bg-primary/20"
+                  }`}
+                >
+                  {item.count}
+                </span>
+              )}
+            </button>
+          ),
+        )}
       </Card>
     </div>
   )
