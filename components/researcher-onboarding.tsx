@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { X } from "lucide-react"
 
 interface ResearcherOnboardingProps {
   currentStep: number
@@ -23,12 +24,16 @@ export default function ResearcherOnboarding({ currentStep, setCurrentStep }: Re
     department: "",
     website: "",
     phone: "",
+    publicationLink: "",
     trialName: "",
     phase: "",
     conditions: [],
     description: "",
     enrollment: "",
   })
+
+  const [customSpecialty, setCustomSpecialty] = useState("")
+  const [customInstitution, setCustomInstitution] = useState("")
 
   const specialties = [
     "Cardiology",
@@ -39,6 +44,27 @@ export default function ResearcherOnboarding({ currentStep, setCurrentStep }: Re
     "Dermatology",
     "Infectious Disease",
     "Psychiatry",
+    "Pulmonology",
+    "Gastroenterology",
+    "Nephrology",
+    "Rheumatology",
+    "Hematology",
+    "Pediatrics",
+    "Geriatrics",
+    "Orthopedics",
+  ]
+
+  const commonInstitutions = [
+    "Stanford Medical Center",
+    "Mayo Clinic",
+    "Johns Hopkins Hospital",
+    "Cleveland Clinic",
+    "Massachusetts General Hospital",
+    "UCLA Medical Center",
+    "UCSF Medical Center",
+    "Duke University Hospital",
+    "Northwestern Memorial Hospital",
+    "University of Toronto",
   ]
 
   const phases = ["Phase 1", "Phase 2", "Phase 3", "Phase 4"]
@@ -50,6 +76,16 @@ export default function ResearcherOnboarding({ currentStep, setCurrentStep }: Re
         ? prev.specialties.filter((s) => s !== specialty)
         : [...prev.specialties, specialty],
     }))
+  }
+
+  const handleAddCustomSpecialty = () => {
+    if (customSpecialty.trim() && !formData.specialties.includes(customSpecialty.trim())) {
+      setFormData((prev) => ({
+        ...prev,
+        specialties: [...prev.specialties, customSpecialty.trim()],
+      }))
+      setCustomSpecialty("")
+    }
   }
 
   const renderStep = () => {
@@ -119,11 +155,36 @@ export default function ResearcherOnboarding({ currentStep, setCurrentStep }: Re
           <Card className="p-8 space-y-6">
             <div>
               <label className="block text-sm font-medium mb-2 text-foreground">Institution</label>
-              <Input
-                placeholder="e.g., Stanford Medical Center"
+              <select
+                className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground mb-2"
                 value={formData.institution}
-                onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
-              />
+                onChange={(e) => {
+                  if (e.target.value === "custom") {
+                    setFormData({ ...formData, institution: "" })
+                    setCustomInstitution("")
+                  } else {
+                    setFormData({ ...formData, institution: e.target.value })
+                  }
+                }}
+              >
+                <option value="">Select institution...</option>
+                {commonInstitutions.map((inst) => (
+                  <option key={inst} value={inst}>
+                    {inst}
+                  </option>
+                ))}
+                <option value="custom">Other (Enter custom)</option>
+              </select>
+              {(formData.institution === "" || !commonInstitutions.includes(formData.institution)) && (
+                <Input
+                  placeholder="Enter your institution name"
+                  value={customInstitution || formData.institution}
+                  onChange={(e) => {
+                    setCustomInstitution(e.target.value)
+                    setFormData({ ...formData, institution: e.target.value })
+                  }}
+                />
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium mb-2 text-foreground">Department</label>
@@ -151,12 +212,34 @@ export default function ResearcherOnboarding({ currentStep, setCurrentStep }: Re
             </div>
             <div>
               <label className="block text-sm font-medium mb-4 text-foreground">Clinical Specialties</label>
-              <div className="grid grid-cols-2 gap-3">
+
+              {/* Selected specialties pills */}
+              {formData.specialties.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {formData.specialties.map((specialty) => (
+                    <div
+                      key={specialty}
+                      className="px-3 py-1.5 bg-primary/10 text-foreground rounded-full text-sm flex items-center gap-2"
+                    >
+                      {specialty}
+                      <button
+                        onClick={() => handleSpecialtyToggle(specialty)}
+                        className="text-primary hover:text-primary/80"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Specialty grid */}
+              <div className="grid grid-cols-2 gap-3 mb-3">
                 {specialties.map((specialty) => (
                   <button
                     key={specialty}
                     onClick={() => handleSpecialtyToggle(specialty)}
-                    className={`p-3 rounded-lg border transition ${
+                    className={`p-3 rounded-lg border transition text-sm ${
                       formData.specialties.includes(specialty)
                         ? "border-primary bg-primary/10 text-foreground"
                         : "border-border bg-card text-foreground/70 hover:border-primary/50"
@@ -165,6 +248,24 @@ export default function ResearcherOnboarding({ currentStep, setCurrentStep }: Re
                     {specialty}
                   </button>
                 ))}
+              </div>
+
+              {/* Custom specialty input */}
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Add custom specialty..."
+                  value={customSpecialty}
+                  onChange={(e) => setCustomSpecialty(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault()
+                      handleAddCustomSpecialty()
+                    }
+                  }}
+                />
+                <Button type="button" onClick={handleAddCustomSpecialty} variant="outline">
+                  Add
+                </Button>
               </div>
             </div>
           </Card>
@@ -200,7 +301,12 @@ export default function ResearcherOnboarding({ currentStep, setCurrentStep }: Re
             </div>
             <div>
               <label className="block text-sm font-medium mb-2 text-foreground">Publication Link (Optional)</label>
-              <Input placeholder="Link to your publication or research profile" type="url" />
+              <Input
+                placeholder="Link to your publication or research profile"
+                type="url"
+                value={formData.publicationLink}
+                onChange={(e) => setFormData({ ...formData, publicationLink: e.target.value })}
+              />
             </div>
           </Card>
         )
@@ -219,10 +325,16 @@ export default function ResearcherOnboarding({ currentStep, setCurrentStep }: Re
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2 text-foreground">Phase</label>
-                <select className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground">
-                  <option>Select phase...</option>
+                <select
+                  className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground"
+                  value={formData.phase}
+                  onChange={(e) => setFormData({ ...formData, phase: e.target.value })}
+                >
+                  <option value="">Select phase...</option>
                   {phases.map((phase) => (
-                    <option key={phase}>{phase}</option>
+                    <option key={phase} value={phase}>
+                      {phase}
+                    </option>
                   ))}
                 </select>
               </div>

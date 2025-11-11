@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { X } from "lucide-react"
 
 interface PatientOnboardingProps {
   currentStep: number
@@ -25,6 +26,8 @@ export default function PatientOnboarding({ currentStep, setCurrentStep }: Patie
     interestAreas: [] as string[],
     timeCommitment: "",
   })
+
+  const [customCondition, setCustomCondition] = useState("")
 
   const conditions = [
     "Diabetes",
@@ -51,6 +54,23 @@ export default function PatientOnboarding({ currentStep, setCurrentStep }: Patie
       conditions: prev.conditions.includes(condition)
         ? prev.conditions.filter((c) => c !== condition)
         : [...prev.conditions, condition],
+    }))
+  }
+
+  const addCustomCondition = () => {
+    if (customCondition.trim() && !formData.conditions.includes(customCondition.trim())) {
+      setFormData((prev) => ({
+        ...prev,
+        conditions: [...prev.conditions, customCondition.trim()],
+      }))
+      setCustomCondition("")
+    }
+  }
+
+  const removeCondition = (condition: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      conditions: prev.conditions.filter((c) => c !== condition),
     }))
   }
 
@@ -124,18 +144,40 @@ export default function PatientOnboarding({ currentStep, setCurrentStep }: Patie
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2 text-foreground">Gender</label>
-                <select className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground">
-                  <option>Select...</option>
-                  <option>Male</option>
-                  <option>Female</option>
-                  <option>Other</option>
-                  <option>Prefer not to say</option>
+                <select
+                  className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground"
+                  value={formData.gender}
+                  onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                >
+                  <option value="">Select...</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                  <option value="Prefer not to say">Prefer not to say</option>
                 </select>
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium mb-4 text-foreground">Current Health Conditions</label>
-              <div className="grid grid-cols-2 gap-3">
+              {formData.conditions.length > 0 && (
+                <div className="mb-4 flex flex-wrap gap-2">
+                  {formData.conditions.map((condition) => (
+                    <span
+                      key={condition}
+                      className="inline-flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium"
+                    >
+                      {condition}
+                      <button
+                        onClick={() => removeCondition(condition)}
+                        className="hover:bg-primary/20 rounded-full p-0.5"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-3 mb-4">
                 {conditions.map((condition) => (
                   <button
                     key={condition}
@@ -149,6 +191,22 @@ export default function PatientOnboarding({ currentStep, setCurrentStep }: Patie
                     {condition}
                   </button>
                 ))}
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2 text-foreground">Add Other Condition</label>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="e.g., Fibromyalgia, Lupus, etc."
+                    value={customCondition}
+                    onChange={(e) => setCustomCondition(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && addCustomCondition()}
+                    className="flex-1"
+                  />
+                  <Button type="button" onClick={addCustomCondition}>
+                    Add
+                  </Button>
+                </div>
+                <p className="text-xs text-foreground/50 mt-2">Select from common conditions above or add your own</p>
               </div>
             </div>
           </Card>
@@ -202,12 +260,16 @@ export default function PatientOnboarding({ currentStep, setCurrentStep }: Patie
             </div>
             <div>
               <label className="block text-sm font-medium mb-2 text-foreground">Time Commitment</label>
-              <select className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground">
-                <option>Select preferred commitment level</option>
-                <option>Minimal (less than 5 hours/month)</option>
-                <option>Moderate (5-10 hours/month)</option>
-                <option>Substantial (10+ hours/month)</option>
-                <option>Very Flexible</option>
+              <select
+                className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground"
+                value={formData.timeCommitment}
+                onChange={(e) => setFormData({ ...formData, timeCommitment: e.target.value })}
+              >
+                <option value="">Select preferred commitment level</option>
+                <option value="minimal">Minimal (less than 5 hours/month)</option>
+                <option value="moderate">Moderate (5-10 hours/month)</option>
+                <option value="substantial">Substantial (10+ hours/month)</option>
+                <option value="flexible">Very Flexible</option>
               </select>
             </div>
           </Card>
